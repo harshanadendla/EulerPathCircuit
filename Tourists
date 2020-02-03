@@ -1,0 +1,74 @@
+//ok oka logic vachindi initial ga....wrong adi...tarvata baga arthamaindi....graph kotta representation(declaration ehe) nerchukunna
+
+#include<bits/stdc++.h>
+using name space std;
+#define int long long
+const int N=1e5+10;
+
+int n,m,a,b;
+set<int> adj[N];
+vector<pair<int,int>> edges;
+int degree[N];
+
+void isThisGraphConnected(int u)
+{
+    vis[u]=true;
+    for(int i : adj[u])
+    {
+        int idx=*adj[u].begin();
+        int v=u^edges[i].first^edges[i].second;
+        if(!vis[v]) isThisGraphConnected(v);
+    }
+}
+
+void euler_walk(int u)
+{
+    while(!adj[u].empty())
+    {
+        int idx=*adj[u].begin();
+        int v=u^edges[idx].first^edges[idx].second;
+
+        if(u!=edges[idx].first)
+        {
+            swap(edges[idx].first,edges[idx].second);
+        }
+        
+        adj[u].erase(idx);
+        adj[v].erase(idx);
+        euler_walk(v);
+    }
+}
+
+int32_t main()
+{
+    ios_base::sync_with_stdio(false),cin.tie(NULL);
+
+    cin>>n>>m;
+    for(int i=0;i<m;i++)
+    {
+        cin>>a>>b;
+        adj[a].insert(i);
+        adj[b].insert(i);
+        degree[a]++;
+        degree[b]++;
+        edges.push_back(make_pair(a,b));
+    }
+
+    isThisGraphConnected(1);
+    for(int i=1;i<=n;i++)
+    {
+        if(!vis[i] || degree[i]%2)
+        {
+            cout<<"NO";
+            return 0;
+        }
+    }
+
+    euler_walk(1);
+    cout<<"YES\n";
+    for(int i=0;i<m;i++)
+    {
+        cout<<edges[i].first<<" "<<edges[i].second<<"\n";
+    }
+    return 0;
+}
